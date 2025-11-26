@@ -1,224 +1,173 @@
-OpenStack VM Export Tool
+# OpenStack VM Exporter
 
-A universal, interactive VM export tool for OpenStack (Glance & Cinder compatible)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)]()
+[![Shell Script](https://img.shields.io/badge/language-bash-blue.svg)]()
+[![OpenStack](https://img.shields.io/badge/OpenStack-Compatible-red.svg)]()
+[![Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
 
+A powerful, interactive Bash toolkit for exporting virtual machines from **any OpenStack environment**.  
+Supports Cinder-based exports, Glance-based exports, multi-volume VMs, snapshots, auto-detection, auto-recovery, and optional conversion for **VMware** or **Hyper‑V**.
 
+---
 
-🚀 Overview
+## 🚀 Features
 
-OpenStack VM Export Tool is a robust Bash script designed to export virtual machines from any OpenStack environment—with maximum compatibility.
+- 📌 **Automatic Volume Detection**  
+  Detects all volumes attached to a VM (boot + data).
 
-It supports both Glance and Cinder backends and can automatically:
+- 📸 **Cinder Snapshot Export**  
+  Creates snapshots and safe clone copies for export.
 
-Create snapshots
+- 🖼️ **Glance Image Export (Fallback Method)**  
+  If Cinder fails → automatic switch to Glance backend.
 
-Create clone volumes
+- 📥 **Direct Image Download**  
+  Downloads QCOW2 images with progress indicator.
 
-Generate Glance images
+- 🔄 **Optional Conversion**  
+  Convert QCOW2 → VHDX (Hyper-V) or VMDK (VMware).
 
-Download disk images
+- 🔧 **Automatic Dependency Installer**  
+  Installs: `jq`, `qemu-utils`, `pv`, `glance`, `python-openstackclient`.
 
-Convert them for Hyper-V or VMware
+- 🛡️ **Supports Custom CA Certificates**  
+  Works with private clouds and custom PKI.
 
-Install missing dependencies
+- 📂 **Interactive Save Path Selection**  
+  Choose where to save exported VM files.
 
-Handle OpenStack variations transparently
+---
 
-This script is ideal for migration, disaster recovery, inter-cloud export, and offline backup.
+## 📦 Requirements
 
-⭐ Features
-✔ Fully interactive
+```bash
+Ubuntu 20.04+ or Debian-based system
+Python OpenStack Client
+Privileges to create snapshots & volumes
+Cinder or Glance access
+```
 
-The script asks for:
+---
 
-VM name
+## 🔧 Installation
 
-Export path
+```bash
+git clone https://github.com/YOUR_REPO/openstack-vm-exporter.git
+cd openstack-vm-exporter
+chmod +x export_vm.sh
+```
 
-Whether you want to convert images
+---
 
-Target hypervisor format (Hyper-V / VMware)
+## ▶️ How to Use
 
-✔ Maximum OpenStack compatibility
+### 1️⃣ Load your OpenStack environment variables
 
-Supports both methods automatically:
+```bash
+source opn_env.sh
+```
 
-Method	Used when
-openstack image create --volume	Primary image export path
-cinder upload-to-image	Fallback for clouds that do not support the above
-✔ Automatic dependency installation
+### 2️⃣ Run the script
 
-The script detects and installs required tools:
+```bash
+./export_vm.sh
+```
 
-jq
+You will be prompted for:
+- VM name  
+- Save path  
+- Conversion options  
 
-pv
+---
 
-qemu-img
+## 📘 Example Output
 
-python3-openstackclient
+```bash
+[+] Starting export of VM: myserver01
+[*] Creating snapshot for volume: boot-disk
+[✔] Snapshot created: snap-boot-disk
+[*] Creating clone volume...
+[✔] Clone ready: clone-boot-disk
+[*] Creating Glance image...
+[✔] Image active: img-boot-disk (42GB)
+[*] Downloading image...
+42GB  |████████████████████████████████████████████████████|  100%
+[✔] Export complete!
+```
 
-python3-cinderclient
+---
 
-Works with:
-apt, yum, dnf.
+## 🧩 Folder Structure
 
-✔ Safe & idempotent
+```bash
+/root/imgstore/
+ └── myserver01/
+     ├── img-boot.qcow2
+     ├── img-disk1.qcow2
+     ├── img-disk2.qcow2
+     └── logs/
+         └── myserver01_2025-02-10.log
+```
 
-Reuses existing snapshots
+---
 
-Reuses existing cloned volumes
+## 🖥️ Example Conversion
 
-Reuses partial images
+### Convert QCOW2 → Hyper‑V VHDX
 
-Can be resumed safely
+```bash
+qemu-img convert -f qcow2 -O vhdx input.qcow2 output.vhdx
+```
 
-✔ Optional disk conversion
+### Convert QCOW2 → VMware VMDK
 
-Supports:
+```bash
+qemu-img convert -f qcow2 -O vmdk input.qcow2 output.vmdk
+```
 
-Hypervisor	Format
-Hyper-V	VHDX
-VMware	VMDK
+---
 
-(Uses qemu-img)
+## 🛠️ Troubleshooting
 
-✔ Complete logging
+### ❗ "VolumeSizeExceedsAvailableQuota"
+Your OpenStack project has insufficient Cinder quota.  
+Solution: increase quota or use Glance export method.
 
-All operations are logged to:
+### ❗ "unable to verify the first certificate"
+Your CA chain is missing.  
+Fix by adding:
 
-<export_path>/<VM_NAME>/logs/<VM>_<timestamp>.log
+```bash
+export OS_CACERT=/etc/ssl/certs/mychain.pem
+```
 
-🛠 Requirements
+---
 
-Linux (Ubuntu, Debian, RHEL, Rocky, AlmaLinux)
+## 🗺️ Roadmap / TODO
 
-Valid OS_* environment variables (from OpenStack RC file)
+- [ ] Add automatic Glance→Cinder fallback handling  
+- [ ] Add support for Swift-based binary export  
+- [ ] Add parallel download for multi‑volume VMs  
+- [ ] Add checksum + integrity verification  
+- [ ] Add colorized output  
 
-Proper SSL certificates (via OS_CACERT, if needed)
+---
 
-Volume management permissions in your project
+## 🤝 Contributing
 
-📦 Installation
+Pull requests are welcome!  
+Follow GitHub standard flow (fork → branch → PR).
 
-Clone the repo and make the script executable:
+---
 
-git clone https://github.com/<your-user>/<your-repo>.git
-cd <your-repo>
-chmod +x export_spc_vm.sh
+## 📜 License
 
-▶️ Usage
+Released under the **MIT License**.
 
-Just run:
+---
 
-./export_spc_vm.sh
+## 👤 Credits
 
+Developed by **Davide Carrabba**  
+Designed for high‑performance exports from complex OpenStack infrastructures.
 
-Example interactive session:
-
-=============================================
- Export VM from OpenStack
-=============================================
-
-Enter the VM name: myserver01
-Enter export directory (default: /root/imgstore): /exports
-
-Convert downloaded QCOW2 images? [y/N]: y
-
-Choose output format:
-  1) Hyper-V (VHDX)
-  2) VMware (VMDK)
-Selection [1-2]: 1
-
-[+] Creating snapshot...
-[+] Creating clone volume...
-[+] Creating image on Glance...
-[+] Falling back to Cinder (if required)...
-[+] Downloading image...
-[+] Converting to VHDX...
-
-📁 Output Structure
-/exports/myserver01/
-│
-├── img-disk1.qcow2
-├── img-disk1.vhdx (optional)
-├── img-disk2.qcow2
-├── img-disk2.vmdk (optional)
-│
-└── logs/
-    └── myserver01_20250101-153000.log
-
-🧪 Tested On
-✔ Operating Systems
-
-Ubuntu 20.04 / 22.04 / 24.04
-
-Rocky Linux 8 / 9
-
-AlmaLinux 8
-
-RHEL 8+
-
-✔ OpenStack versions
-
-Train
-
-Ussuri
-
-Victoria
-
-Wallaby
-
-Provider-custom variants
-
-Clouds without Glance volume injection
-
-🔐 Security Notes
-
-Passwords are not saved.
-
-Authentication depends solely on OS_* variables.
-
-If using federated identity, ensure token validity.
-
-📌 Roadmap
-
-Planned improvements:
-
-Parallel download acceleration
-
-Resume broken downloads
-
-Direct export to S3 / MinIO
-
-Automatic compression (.xz or .gz)
-
-Export VM metadata (flavor, networks, SGs)
-
-🤝 Contributing
-
-Contributions are welcome!
-Feel free to open:
-
-Issues
-
-Pull requests
-
-Feature proposals
-
-📜 License
-
-Released under the MIT License.
-You are free to use, modify, and distribute for commercial or private use.
-
-❤️ Credits
-
-Script designed with a focus on:
-
-Real-world OpenStack cloud variations
-
-Reliability
-
-Maximum portability
-
-Migration use-cases (KVM → Hyper-V / VMware)
