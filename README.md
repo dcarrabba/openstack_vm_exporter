@@ -52,7 +52,7 @@ Cinder or Glance access
 ## 🔧 Installation
 
 ```bash
-git clone https://github.com/YOUR_REPO/openstack-vm-exporter.git
+git clone https://github.com/dcarrabba/openstack_export_vm.git
 cd openstack-vm-exporter
 chmod +x export_vm.sh
 ```
@@ -61,10 +61,10 @@ chmod +x export_vm.sh
 
 ## ▶️ How to Use
 
-### 1️⃣ Load your OpenStack environment variables
+### 1️⃣ Load your OpenStack environment variables downloadable from openstack dashboard.
 
 ```bash
-source opn_env.sh
+source open_environment.sh
 ```
 
 ### 2️⃣ Run the script
