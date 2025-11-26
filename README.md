@@ -70,7 +70,7 @@ source open_environment.sh
 ### 2️⃣ Run the script
 
 ```bash
-./export_vm.sh
+./openstack_export_vm.sh
 ```
 
 You will be prompted for:
