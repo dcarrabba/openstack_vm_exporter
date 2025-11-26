@@ -52,7 +52,7 @@ Cinder or Glance access
 ## 🔧 Installation
 
 ```bash
-git clone https://github.com/dcarrabba/openstack_export_vm.git
+git clone https://github.com/dcarrabba/openstack_vm_exporter.git
 cd openstack-vm-exporter
 chmod +x export_vm.sh
 ```
