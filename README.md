@@ -54,7 +54,7 @@ Cinder or Glance access
 ```bash
 git clone https://github.com/dcarrabba/openstack_vm_exporter.git
 cd openstack-vm-exporter
-chmod +x export_vm.sh
+chmod +x openstack-vm-exporter.sh
 ```
 
 ---
